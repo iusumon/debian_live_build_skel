@@ -1,0 +1,186 @@
+For Live Build
+----------------------------
+apt install live-build
+vi /etc/live/build.conf
+
+LB_MIRROR_BOOTSTRAP="http://mirror.dhakacom.com/debian/"
+LB_MIRROR_CHROOT_SECURITY="http://deb.debian.org/debian-security/"
+LB_MIRROR_CHROOT_BACKPORTS="http://mirror.dhakacom.com/debian/"
+
+
+mkdir work_live_build_amd64
+cd work_live_build_amd64
+lb config
+    The folder config/includes.chroot contains the file structure of the new ISO.
+    The home directory of the user is config/includes.chroot/home/user
+    debian-live executes script files inside config/hooks/live in different moments of the building process
+    Use package-lists to easy install packages inside the live-cd. For example, from the official docs: echo vlc >> config/package-lists/my.list.chroot makes lb build to install vlc in the live-cd’s OS. Separate each package to install by a line:
+
+cp /usr/share/doc/live-build/examples/auto/* auto/
+
+vi auto/config
+---------------------------------------------------------------------------------------------------------------
+   #!/bin/sh
+
+    set -e
+
+    lb config noauto \
+        --mode debian \
+        --distribution buster \
+        --architectures amd64 \
+        --debian-installer live \
+        --archive-areas "main contrib non-free" \
+        --backports true
+        --mirror-binary http://mirror.dhakacom.com/debian/ \
+        --mirror-binary-security http://security.debian.org/ \
+        --mirror-binary-backports http://mirror.dhakacom.com/debian/ 
+        "${@}"
+ ---------------------------------------------------------------------------------------------------------------
+#!/bin/sh
+
+set -e
+
+lb config noauto \
+    --mode debian \
+    --distribution bullseye \
+    --architectures amd64 \
+    --debian-installer live \
+    --archive-areas "main contrib non-free" \
+    --backports true \
+    --mirror-bootstrap http://deb.debian.org/debian/ \
+    --mirror-binary http://deb.debian.org/debian/ \
+	"${@}"
+ ---------------------------------------------------------------------------------------------------------------
+vi auto/clean
+
+#!/bin/sh
+
+set -e
+
+lb clean noauto "${@}"
+
+rm -f config/binary config/bootstrap config/chroot config/common config/source
+rm -f build.log
+ ---------------------------------------------------------------------------------------------------------------
+vi auto/build
+#!/bin/sh
+
+set -e
+
+lb build noauto "${@}" 2>&1 | tee build.log
+--------------------------------------------------------------------------------------------------------
+Now run the following command for live build configuration
+lb config
+--------------------------------------------------------------------------------------------------------
+Package_List_for_Live_Build (config/package-lists/my.list.chroot)
+
+task-xfce-desktop
+libreoffice
+vim
+vim-runtime
+vim-gtk
+gimp
+network-manager-gnome 
+vlc
+chromium
+php
+mariadb-server
+mariadb-client
+adminer
+aria2
+synaptic 
+pulseaudio 
+xscreensaver 
+xserver-xorg-core 
+netselect-apt
+persepolis 
+plank
+arc-theme 
+elementary-xfce-icon-theme
+murrine-themes
+xserver-xorg-video-intel
+x11-apps
+galculator 
+genisoimage 
+ibus
+ibus-gtk
+ibus-m17n
+m17n-db
+printer-driver-hpijs 
+printer-driver-pnm2ppa 
+cups 
+cups-ipp-utils
+isomaster
+pdfarranger
+p7zip-full
+printer-driver-pnm2ppa 
+gparted
+evince
+alsamixergui
+imagemagick
+kbd 
+mtpaint
+task-laptop
+grub-pc
+lsb-release
+conky-std
+git
+lftp
+wget
+gnupg
+hardinfo
+---------------------------------------------------------------------------------------
+install extra deb package for chroot/iso/live 
+copy deb packages in config/packages.chroot/ folder
+---------------------------------------------------------------------------------------
+add extra sources.list for chroot/iso/live
+copy extra packages source list in config/archives/ folder
+cp /etc/apt/sources.list.d/ * to config/archives/
+---------------------------------------------------------------------------------------
+User settings and customization of desktop 
+copy user setting file in config/includes.chroot/ folder
+(/etc/skel, /etc/adminer, /etc/lightdm)
+-----------------------------------------------------------------------------------------
+Change program Settings and configuration in live and normal by script
+copy script config/hooks/live and config/hooks/normal folder
+-----------------------------------------------------------------------------------------
+For Debootstrap Problem
+-----------------------------------------------------------------------------------------
+mount -o remount,exec,dev /media/zahid/Lin_Big/
+
+apt-get install debootstrap squashfs-tools xorriso grub-pc-bin grub-efi-amd64-bin mtools
+
+debootstrap --arch=amd64 --variant=minbase stable /media/zahid/Lin_Big/work_debian_live_build_amd64/chroot http://mirror.dhakacom.com/debian/
+debootstrap --arch=amd64 --variant=minbase stable /media/zahid/Lin_Big/work_debian_live_build_amd64/chroot http://deb.debian.org/debian/
+-----------------------------------------------------------------------------------------
+Now to build the live CD run the following commands
+lb clean
+lb build
+
+    lb clean cleans the directory from files lb build creates, but not the ones lb config creates.
+
+Execute cp /usr/share/doc/live-build/examples/gitignore .gitignore to get a suitable .gitignore.
+Execute lb clean to avoid any file created by lb build ends up committed.
+-----------------------------------------------------------------------------------------------
+lb clean is responsible for cleaning up after a system is built. It removes the build directories, and removes some other files including stage files, and any detritus left behind by other live-build commands.
+
+OPTIONS
+
+In addition to its specific options lb clean understands all generic live-build options. See live-build(7) for a complete list of all generic live-build options.
+
+--all
+    removes chroot, binary, stage, and source. The cache directory is kept. This is the default operation and will be performed if no argument is given.
+--cache
+    removes the cache directories.
+--chroot
+    unmounts and removes the chroot directory.
+--binary
+    removes all binary related caches, files, directories, and stages files.
+--purge
+    removes everything, including all caches. The config directory is kept.
+--remove
+    removes everything, including package cache but not stage cache. The config directory is kept.
+--stage
+    removes all stage files.
+--source
+    removes all source related caches, files, directories, and stage files. 

@@ -1,0 +1,89 @@
+
+conky.config = {
+    background = true,
+        use_xft = true,
+        xftfont = 'DejaVu Sans Mono:size=2',
+        xftalpha = 0.5,
+        update_interval = 5.0,
+        total_run_times = 0,
+        own_window = true,
+        own_window_type = 'desktop',
+        own_window_transparent = true,
+        own_window_hints = 'undecorated,below,sticky,skip_taskbar,skip_pager',
+        double_buffer = true,
+        minimum_size = '170 5',
+        maximum_width = 190,
+        draw_shades = false,
+        draw_outline = false,
+        draw_borders = false,
+        draw_graph_borders = true,
+        default_color = 'aaaaaa',
+        default_shade_color = 'red',
+        default_outline_color = 'green',
+        alignment = 'top_right',
+        gap_x = 5,
+        gap_y = 37,
+        false_buffers = true,
+        uppercase = false,
+        cpu_avg_samples = 2,
+        override_utf8_locale = false,
+        if_up_strictness = 'address'
+}
+conky.text = [[
+    SYSTEM ${hr 2}${voffset -10}
+
+    ${alignc 42}${font 'Anonymous Pro' :size=8}${exec lsb_release -ds}
+    ${font StyleBats:size=16}B${font 'Anonymous Pro' :size=8}   Kernel:  ${alignr}${kernel}
+    ${font StyleBats:size=16}A${font 'Anonymous Pro' :size=8}   CPU: ${cpu cpu0}% ${alignr}${cpubar cpu0 8,60}
+    ${font StyleBats:size=16}g${font 'Anonymous Pro' :size=8}   RAM: $mem ${alignr}${membar 8,60}
+    ${font StyleBats:size=16}j${font 'Anonymous Pro' :size=8}   SWAP: $swap ${alignr}${swapbar 8,60}
+    ${font StyleBats:size=16}q${font 'Anonymous Pro' :size=8}   Uptime: ${alignr}${uptime}
+    ${font StyleBats:size=16}X${font 'Anonymous Pro' :size=8}   Temparture:  ${acpitemp} degrees c
+    ${font StyleBats:size=16}e${font 'Anonymous Pro' :size=8}Remaining: ${execi 60 acpi -b | awk '{print$5}'} ${alignr} (${execi 60 acpi -b | awk '{print $4}' | cut -b -3})
+#${color}Power: ${color LightBlue}$battery ${battery_bar BAT0 11,0}
+
+    PROCESSES ${hr 2}
+
+    NAME $alignr Ram_Usage
+    ${top name 1} $alignr ${top mem_res 1}
+    ${top name 2} $alignr ${top mem_res 2}
+    ${top name 3} $alignr ${top mem_res 3}
+    ${top name 4} $alignr ${top mem_res 4}
+    ${top name 5} $alignr ${top mem_res 5}
+    ${top name 6} $alignr ${top mem_res 6}
+    ${top name 7} $alignr ${top mem_res 7}
+    ${top name 8} $alignr ${top mem_res 8}
+        
+    HD ${hr 2}
+    ${voffset 4}${font PizzaDude Bullets:size=14}m${font 'Anonymous Pro' :size=8}   ${voffset -9}Root: ${fs_used /} / ${fs_size /} 
+
+    ${fs_bar /}
+
+    ${font PizzaDude Bullets:size=14}m${font 'Anonymous Pro' :size=8} ${voffset -9}Home: ${fs_used /home} / ${fs_size /home} 
+
+    ${fs_bar /home/}
+
+    KEYBINDINGS ${hr 2}
+        
+    Alt+F2$alignr Run Dialog
+    Super+space$alignr Keyboard
+    Super+t$alignr Terminal
+    Super+f$alignr File Manager
+    Super+e$alignr Email
+    Super+b$alignr Web Browser
+    Ctrl+up/down$alignr Volume Control
+
+    NETWORK ${hr 2}
+    ${if_up wlan0}
+    ${voffset -6}${font PizzaDude Bullets:size=14}O${font 'Anonymous Pro' :size=8}   Up: ${upspeed wlan0} kb/s ${alignr}${upspeedgraph wlan0 8,60 F57900 FCAF3E}
+    ${voffset 4}${font PizzaDude Bullets:size=14}U${font 'Anonymous Pro' :size=8}   Down: ${downspeed wlan0} kb/s ${alignr}${downspeedgraph wlan0 8,60 F57900 FCAF3E}
+    ${voffset 4}${font PizzaDude Bullets:size=14}N${font 'Anonymous Pro' :size=8}   Upload: ${alignr}${totalup wlan0}
+    ${voffset 4}${font PizzaDude Bullets:size=14}T${font 'Anonymous Pro' :size=8}   Download: ${alignr}${totaldown wlan0}
+    ${voffset 4}${font PizzaDude Bullets:size=14}a${font 'Anonymous Pro' :size=8}   Local Ip: ${alignr}${addr wlan0}${endif}
+    ${if_up eth0}
+    ${voffset -6}${font PizzaDude Bullets:size=14}O${font 'Anonymous Pro' :size=8}   Up: ${upspeed eth0} kb/s ${alignr}${upspeedgraph eth0 8,60 F57900 FCAF3E}
+    ${voffset 4}${font PizzaDude Bullets:size=14}U${font 'Anonymous Pro' :size=8}   Down: ${downspeed eth0} kb/s ${alignr}${downspeedgraph eth0 8,60 F57900 FCAF3E}
+    ${voffset 4}${font PizzaDude Bullets:size=14}N${font 'Anonymous Pro' :size=8}   Upload: ${alignr}${totalup eth0}
+    ${voffset 4}${font PizzaDude Bullets:size=14}T${font 'Anonymous Pro' :size=8}   Download: ${alignr}${totaldown eth0}
+    ${voffset 4}${font PizzaDude Bullets:size=14}a${font 'Anonymous Pro' :size=8}   Local Ip: ${alignr}${addr eth0}${endif}
+]]
